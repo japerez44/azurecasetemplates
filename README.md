@@ -103,5 +103,10 @@ Additionally, using the Python script "retrivehttpscert.py" on v3 folder, you co
     keyvault_name = "keyvault-name"
     certificate_name = "certificate-name"
 
+A possible error output for this tool is:
+
+    * python retrivehttpscert.py
+{'error': 'invalid_request', 'error_description': "AADSTS90002: Tenant 'ced2c552-7d1f-4731-aa3a-xxxxxxxx' not found. Check to make sure you have the correct tenant ID and are signing into the correct cloud. Check with your subscription administrator, this may happen if there are no active subscriptions for the tenant. Trace ID: 01dcee6d-a211-4ac4-b420-34719xxxxxx Correlation ID: c8314deb-2fb7-416b-b619-a54xxxxxx Timestamp: 2025-08-21 00:25:05Z", 'error_codes': [90002], 'timestamp': '2025-08-21 00:25:05Z', 'trace_id': '01dcee6d-a211-4ac4-b420-347xxxxxxx', 'correlation_id': 'c8314deb-2fb7-416b-b619-a54xxxxxxxx', 'error_uri': 'https://login.microsoftonline.com/error?code=90002'}
+
 
 That's all. Thank you all.
