@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "spaincentral"
+    },
+    "vmName": {
+      "value": "myUbuntuVM"
+    },
+    "vmNicName": {
+      "value": "myVmNic1"
+    },
+    "vmSize": {
+      "value": "Standard_B2s"
+    },
+    "adminUsername": {
+      "value": "azureuser"
+    },
+    "adminPassword": {
+      "value": "P@ssword1234!"
+    },
+    "vnetName": {
+      "value": "VNet"
+    },
+    "vnetAddressPrefix": {
+      "value": "10.0.0.0/16"
+    },
+    "subnetName": {
+      "value": "myVmSubnet"
+    },
+    "subnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
+    "routeTableName": {
+      "value": "vmRouteTable"
+    },
+    "nsgName": {
+      "value": "vmSubnetNSG"
+    },
+    "publicIpName": {
+      "value": "myPublicIP"
+    },
+    "bastionName": {
+      "value": "myBastion"
+    },
+    "bastionSubnetName": {
+      "value": "AzureBastionSubnet"
+    },
+    "bastionSubnetPrefix": {
+      "value": "10.0.3.0/27"
+    },
+    "firewallName": {
+      "value": "myFirewall"
+    },
+    "firewallSubnetName": {
+      "value": "AzureFirewallSubnet"
+    },
+    "firewallSubnetPrefix": {
+      "value": "10.0.2.0/24"
+    },
+    "firewallPublicIpName": {
+      "value": "myFirewallPublicIP"
+    }
+  }
+}

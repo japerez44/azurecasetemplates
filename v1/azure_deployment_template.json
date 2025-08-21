@@ -1,0 +1,328 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "vmName": {
+      "type": "string"
+    },
+    "vmNicName": {
+      "type": "string"
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetAddressPrefix": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "subnetPrefix": {
+      "type": "string"
+    },
+    "routeTableName": {
+      "type": "string"
+    },
+    "nsgName": {
+      "type": "string"
+    },
+    "publicIpName": {
+      "type": "string"
+    },
+    "bastionName": {
+      "type": "string"
+    },
+    "bastionSubnetName": {
+      "type": "string"
+    },
+    "bastionSubnetPrefix": {
+      "type": "string"
+    },
+    "firewallName": {
+      "type": "string"
+    },
+    "firewallSubnetName": {
+      "type": "string"
+    },
+    "firewallSubnetPrefix": {
+      "type": "string"
+    },
+    "firewallPublicIpName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('vnetName')]",
+      "location": "[parameters('location')]",
+	  "dependsOn": [
+		"[resourceId('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]",
+		"[resourceId('Microsoft.Network/routeTables/', parameters('routeTableName'))]"
+	  ],
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetAddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+              },
+              "routeTable": {
+                "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
+              }
+            }
+          },
+          {
+            "name": "[parameters('firewallSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('firewallSubnetPrefix')]"
+            }
+          },
+          {
+            "name": "[parameters('bastionSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('bastionSubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('publicIpName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('firewallPublicIpName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('vmNicName')]",
+      "location": "[parameters('location')]",
+  	  "dependsOn": [
+		"[resourceId('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]"
+	  ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/bastionHosts",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('bastionName')]",
+      "location": "[parameters('location')]",
+	  "dependsOn": [
+		"[resourceId('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+		"[resourceId('Microsoft.Network/publicIpAddresses/', parameters('publicIpName'))]"
+	  ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "bastionIPConfig",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('bastionSubnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('nsgName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "DenyInboundInternet",
+            "properties": {
+              "priority": 100,
+              "access": "Deny",
+              "direction": "Inbound",
+              "protocol": "*",
+              "sourceAddressPrefix": "Internet",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "*"
+            }
+          },
+          {
+            "name": "AllowOutboundInternet",
+            "properties": {
+              "priority": 100,
+              "access": "Allow",
+              "direction": "Outbound",
+              "protocol": "*",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "Internet",
+              "destinationPortRange": "*"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('firewallName')]",
+      "location": "[parameters('location')]",
+	  "dependsOn": [
+		"[resourceId('Microsoft.Network/virtualNetworks/', parameters('vnetName'))]",
+		"[resourceId('Microsoft.Network/publicIpAddresses/', parameters('firewallPublicIpName'))]"
+	  ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "FWIpConfig",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('firewallSubnetName'))]"
+              },
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('firewallPublicIpName'))]"
+              }
+            }
+          }
+        ],
+        "applicationRuleCollections": [],
+        "networkRuleCollections": [
+          {
+            "name": "AllowAllOutbound",
+            "properties": {
+              "priority": 100,
+              "action": {
+                "type": "Allow"
+              },
+              "rules": [
+                {
+                  "name": "AllowInternet",
+                  "protocols": [
+                    "Any"
+                  ],
+                  "sourceAddresses": [
+                    "[parameters('subnetPrefix')]"
+                  ],
+                  "destinationAddresses": [
+                    "0.0.0.0/0"
+                  ],
+                  "destinationPorts": [
+                    "*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('routeTableName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "routes": [
+          {
+            "name": "RouteToFirewall",
+            "properties": {
+              "addressPrefix": "0.0.0.0/0",
+              "nextHopType": "VirtualAppliance",
+              "nextHopIpAddress": "10.0.2.4"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-07-01",
+      "name": "[parameters('vmName')]",
+      "location": "[parameters('location')]",
+	  "dependsOn": [
+		"[resourceId('Microsoft.Network/networkInterfaces/', parameters('vmNicName'))]",
+		"[resourceId('Microsoft.Network/routeTables/', parameters('routeTableName'))]"
+	  ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "0001-com-ubuntu-server-jammy",
+            "sku": "22_04-lts-gen2",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('vmNicName'))]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

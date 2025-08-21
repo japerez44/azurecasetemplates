@@ -1,0 +1,34 @@
+#cloud-config
+package_update: true
+packages:
+  - apache2
+runcmd:
+  - a2enmod ssl
+  - a2ensite default-ssl
+  - |
+    for dev in $(lsblk -dn -o NAME); do
+      case $dev in
+        sd*) if ! fdisk -l /dev/$dev | grep -q "Disklabel type"; then
+                DISK=$dev
+                break
+             fi ;;
+      esac
+    done
+  - |
+    if [ -n "$DISK" ]; then
+      mkfs.xfs /dev/$DISK
+      mkdir -p /data/www
+      UUID=$(blkid -s UUID -o value /dev/$DISK)
+      echo "UUID=$UUID /data/www xfs defaults,nofail 1 2" >> /etc/fstab
+      mount /data/www
+      chown -R www-data:www-data /data/www
+      chmod -R 755 /data/www
+    fi
+  - mkdir -p /data/www
+  - mount /data/www
+  - chown -R www-data:www-data /data/www
+  - sed -i 's|DocumentRoot /var/www/html|DocumentRoot /data/www|' /etc/apache2/sites-available/000-default.conf
+  - sed -i 's|DocumentRoot /var/www/html|DocumentRoot /data/www|' /etc/apache2/sites-available/default-ssl.conf
+  - sed -i 's|^\s*SSLProtocol.*|SSLProtocol -all +TLSv1.2 +TLSv1.3|' /etc/apache2/mods-available/ssl.conf
+  - sed -i 's|^\s*SSLCipherSuite.*|SSLCipherSuite ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305|' /etc/apache2/mods-available/ssl.conf
+  - systemctl restart apache2

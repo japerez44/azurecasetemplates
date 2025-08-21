@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "spaincentral"
+    },
+    "vmName": {
+      "value": "myUbuntuVM"
+    },
+    "vmNicName": {
+      "value": "myVmNic1"
+    },
+    "vmSize": {
+      "value": "Standard_B2s"
+    },
+    "adminUsername": {
+      "value": "azureuser"
+    },
+    "adminPassword": {
+      "value": "P@ssword1234!"
+    },
+    "vnetName": {
+      "value": "VNet"
+    },
+    "subnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
+    "firewallName": {
+      "value": "myFirewall"
+    },
+    "firewallSubnetName": {
+      "value": "AzureFirewallSubnet"
+    },
+	"firewallPublicIpName": {
+      "value": "myFirewallPublicIP"
+    },
+    "cloudInit": {
+      "value": "I2Nsb3VkLWNvbmZpZwpwYWNrYWdlX3VwZGF0ZTogdHJ1ZQpwYWNrYWdlczoKICAtIGFwYWNoZTIKcnVuY21kOgogIC0gYTJlbm1vZCBzc2wKICAtIGEyZW5zaXRlIGRlZmF1bHQtc3NsCiAgLSBzeXN0ZW1jdGwgcmVzdGFydCBhcGFjaGUy"
+    }
+  }
+}
