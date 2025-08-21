@@ -43,7 +43,7 @@ Deliverables
 For running scenario V1, execute the following steps:
   - Login to Azure Portal
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file (inside v1 folder on this GIT) to $HOME filesystem and run sequentially:
-  - 
+    
           * az group create --name GrpRes1 --location spaincentral
     
           * az deployment group create \
@@ -86,7 +86,7 @@ Same for scenario V3:
               --yes
     
   - and after that:
-  - 
+    
           * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_templatev3.json \
