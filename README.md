@@ -43,7 +43,9 @@ Deliverables
 For running scenario V1, execute the following steps:
   - Login to Azure Portal
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file (inside v1 folder on this GIT) to $HOME filesystem and run sequentially:
+  - 
           * az group create --name GrpRes1 --location spaincentral
+    
           * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_template.json \
@@ -57,6 +59,7 @@ Parameters file is totally configurable and you can use other values as you need
 For running scenario V2, execute the following steps:
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file for v2 challenge
   - As we have to redeploy a VM with some modifications from the previous one, we remove first from our resources group with the following command:
+    
           * az vm delete \
               --resource-group GrpRes1 \
               --name myUbuntuVM \
@@ -64,21 +67,26 @@ For running scenario V2, execute the following steps:
     
     @use the resource group & VM names you set on the previous scenario
   - and after that:
+    
           * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_templatev2.json \
               --parameters @azure_parametersv2.json
+    
   - if everything is fine, you could access throuh internet to a simmple HTTP(S) web page on the VM, across the deployed Azure Firewall.
 
 
 Same for scenario V3:
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file for v3 challenge
   - Remove VM first from our resources group with the following command:
+    
           * az vm delete \
               --resource-group GrpRes1 \
               --name myUbuntuVM \
               --yes
+    
   - and after that:
+  - 
           * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_templatev3.json \
