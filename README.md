@@ -43,13 +43,13 @@ INSTRUCTIONS:
 For running scenario V1, execute the following steps:
   - Login to Azure Portal
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file (inside v1 folder on this GIT) to $HOME filesystem and run sequentially:
-          $ az group create --name GrpRes1 --location spaincentral
-          $ az deployment group create \
+          * az group create --name GrpRes1 --location spaincentral
+          * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_template.json \
               --parameters @azure_parameters.json
     
-           * "GrpRes1" can be whatever, and "spaincentral" should be any other location, but then, you´ll have to set the same value in the Parameters file
+           · "GrpRes1" can be whatever, and "spaincentral" should be any other location, but then, you´ll have to set the same value in the Parameters file
   - if it is succeessfull, it will have created: a Bastion (the only way to access to the VM), a Firewall, 2x public IPs (for Bastion and Firewall services), an Ubuntu VM, one disk and one nic for the VM, a routing table, a security group for the subnet and a virtual network for all these elements.
 Parameters file is totally configurable and you can use other values as you need them. However, you'll have to set then same values on v2&v3 parameters files...
 
@@ -57,14 +57,14 @@ Parameters file is totally configurable and you can use other values as you need
 For running scenario V2, execute the following steps:
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file for v2 challenge
   - As we have to redeploy a VM with some modifications from the previous one, we remove first from our resources group with the following command:
-          $ az vm delete \
+          * az vm delete \
               --resource-group GrpRes1 \
               --name myUbuntuVM \
               --yes
     
-          * use the resource group & VM names you set on the previous scenario
+          · use the resource group & VM names you set on the previous scenario
   - and after that:
-          $ az deployment group create \
+          * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_templatev2.json \
               --parameters @azure_parametersv2.json
@@ -74,19 +74,19 @@ For running scenario V2, execute the following steps:
 Same for scenario V3:
   - Open a Bash Cloud Shell (CLI) and upload ARM template and parameters file for v3 challenge
   - Remove VM first from our resources group with the following command:
-          $ az vm delete \
+          * az vm delete \
               --resource-group GrpRes1 \
               --name myUbuntuVM \
               --yes
   - and after that:
-          $ az deployment group create \
+          * az deployment group create \
               --resource-group GrpRes1 \
               --template-file azure_deployment_templatev3.json \
               --parameters @azure_parametersv3.json
   
   - we will end up with a VM accessible from the internet (only by HTTP(S) through an firewall infraestructure deployed on Microsoft Azure.
 Additionally, using the Python script "retrivehttpscert.py" on v3 folder, you could extract the certificate (PFX: public certificate plus private key) setting proper values to some variables inside the script:
-# REPLACE THESE ENTRY PARAMETERS with your actual values
+&& REPLACE THESE ENTRY PARAMETERS with your actual values
 client_id = "your-cliend-id"
 client_secret = "<secret>"
 tenant_id = "your-tenant-id"
