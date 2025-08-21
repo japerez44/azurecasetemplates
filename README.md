@@ -93,12 +93,15 @@ Same for scenario V3:
               --parameters @azure_parametersv3.json
   
   - we will end up with a VM accessible from the internet (only by HTTP(S) through an firewall infraestructure deployed on Microsoft Azure.
+
 Additionally, using the Python script "retrivehttpscert.py" on v3 folder, you could extract the certificate (PFX: public certificate plus private key) setting proper values to some variables inside the script:
+
     && REPLACE THESE ENTRY PARAMETERS with your actual values
     client_id = "your-cliend-id"
     client_secret = "<secret>"
     tenant_id = "your-tenant-id"
     keyvault_name = "keyvault-name"
     certificate_name = "certificate-name"
+
 
 That's all. Thank you all.
